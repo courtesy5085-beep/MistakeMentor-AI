@@ -611,4 +611,63 @@ def login_signup():
                     try:
                         if supabase:
                             user = supabase.auth.sign_in_with_password({"email": email, "password": password})
+                            # Authentication UI
+def login_signup():
+    col1, col2, col3 = st.columns([1, 2, 1])
+    
+    with col2:
+        st.markdown("<br><br>", unsafe_allow_html=True)
         
+        # Animated header
+        st.markdown("""
+        <div style='text-align: center;' class='floating'>
+            <h1 style='font-size: 48px; font-weight: 800;'>
+                <span class='gradient-text'>MistakeMentor AI Pro</span>
+            </h1>
+            <p style='color: #9CA3AF; font-size: 18px; margin-top: -10px;'>
+                Transform Your Mistakes into Mastery
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        if lottie_brain:
+            st_lottie(lottie_brain, height=200, key="brain_anim")
+        
+        tab1, tab2 = st.tabs(["🔑 Login", "✨ Sign Up"])
+        
+        with tab1:
+            with st.form("login_form"):
+                email = st.text_input("📧 Email", placeholder="you@example.com")
+                password = st.text_input("🔒 Password", type="password", placeholder="••••")
+                col_a, col_b = st.columns([2, 1])
+                with col_a:
+                    submitted = st.form_submit_button("🚀 Login to Continue", use_container_width=True)
+                
+                if submitted:
+                    try:
+                        if supabase:
+                            user = supabase.auth.sign_in_with_password({"email": email, "password": password})
+                            st.session_state.user = user.user
+                            update_streak(user.user.id)
+                            st.success("Logged in successfully!")
+                            st.rerun()
+                        else:
+                            st.error("Supabase not connected. Add SUPABASE_URL and SUPABASE_KEY in secrets.")
+                    except Exception as e:
+                        st.error(f"Login failed: {e}")
+
+        with tab2:
+            with st.form("signup_form"):
+                email = st.text_input("📧 Email", placeholder="you@example.com", key="signup_email")
+                password = st.text_input("🔒 Password", type="password", placeholder="••••", key="signup_pass")
+                submitted = st.form_submit_button("✨ Create Account", use_container_width=True)
+                
+                if submitted:
+                    try:
+                        if supabase:
+                            user = supabase.auth.sign_up({"email": email, "password": password})
+                            st.success("Account created! Check your email to verify, then login.")
+                        else:
+                            st.error("Supabase not connected. Add SUPABASE_URL and SUPABASE_KEY in secrets.")
+                    except Exception as e:
+                        st.error(f"Signup failed: {e}")
